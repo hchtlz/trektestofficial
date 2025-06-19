@@ -280,9 +280,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@etaminstudio/trek@npm:^0.1.7":
-  version: 0.1.7
-  resolution: "@etaminstudio/trek@npm:0.1.7::__archiveUrl=https%3A%2F%2Fgit.etaminstud.io%2Fapi%2Fv4%2Fprojects%2F229%2Fpackages%2Fnpm%2F%40etaminstudio%2Ftrek%2F-%2F%40etaminstudio%2Ftrek-0.1.7.tgz"
+"@etaminstudio/trek@portal:/Users/hugochantelauze/code/trek::locator=trektestofficial%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@etaminstudio/trek@portal:/Users/hugochantelauze/code/trek::locator=trektestofficial%40workspace%3A."
   dependencies:
     "@hotwired/stimulus": ^3.2.2
     "@hotwired/turbo-rails": ^8.0.0
@@ -303,9 +303,8 @@ __metadata:
     sortablejs: ^1.15.0
     stimulus-use: ^0.52.0
     tom-select: ^2.2.2
-  checksum: 2af2fec35aa7437d6d1cd0f1a785c32b30da9bbbd41f820ed3734fed1733d14b0143294a25024041ea9d6e207f50c9568bf4b2c4472072bd34e65e8cc166ec7d
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@hotwired/stimulus@npm:^3.2.2":
   version: 3.2.2
