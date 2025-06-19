@@ -79,4 +79,4 @@ gem "simplecov", "~> 0.22.0", group: [:test]
 gem "slim_lint", group: [:development, :test]
 gem "sorcery", "~> 0.17"
 gem "strip_attributes"
-gem "trek", "~> 0.1.7", git: "https://git.etaminstud.io/etaminstudio/trek.git", branch: "172-ajouter-lookbook"
+gem "trek", "~> 0.1.7", git: "https://git.etaminstud.io/etaminstudio/trek.git", branch: "main"

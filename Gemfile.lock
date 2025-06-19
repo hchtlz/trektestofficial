@@ -1,7 +1,7 @@
 GIT
   remote: https://git.etaminstud.io/etaminstudio/trek.git
-  revision: 2b5ec2c9d33198cb7238ec10c515e26a50ffa270
-  branch: 172-ajouter-lookbook
+  revision: ceb0f58ea1827cbf8679935b633dec942940051f
+  branch: 170-admin-neuve-crash-sur-admin_webfonts_link_tag
   specs:
     trek (0.1.7)
       action_policy (~> 0.6.5)
