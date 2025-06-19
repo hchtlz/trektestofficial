@@ -1,6 +1,6 @@
 GIT
   remote: https://git.etaminstud.io/etaminstudio/trek.git
-  revision: d0ec018c29045db98ca2df035492909c4b37125d
+  revision: 2b5ec2c9d33198cb7238ec10c515e26a50ffa270
   branch: 172-ajouter-lookbook
   specs:
     trek (0.1.7)
