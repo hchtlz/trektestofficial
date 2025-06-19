@@ -22,7 +22,7 @@
             resource_plural: model_name.human(count: 2).downcase,
           ),
         ) do |b|
-          b.icon("admin/reorder")
+          b.with_icon("admin/reorder")
         end
       end
 
@@ -31,7 +31,7 @@
           href: [:new, :admin, model_element],
           text: i18n_resource_label(:new, model),
         ) do |b|
-          b.icon("admin/add")
+          b.with_icon("admin/add")
         end
       end
     end
