@@ -1,0 +1,41 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+#
+# pre-push:
+#   commands:
+#     packages-audit:
+#       tags: frontend security
+#       run: yarn audit
+#     gems-audit:
+#       tags: backend security
+#       run: bundle audit
+
+pre-commit:
+  parallel: true
+  commands:
+    stylelint:
+      tags: css style
+      glob: "**/*.css"
+      run: yarn stylelint {staged_files} --fix
+      stage_fixed: true
+    eslint:
+      tags: js style
+      glob: "**/*.js"
+      run: yarn eslint {staged_files} --fix
+      stage_fixed: true
+    prettier:
+      tags: css js style
+      glob: "{app,config,lib,spec}/**/*.{css,js,json,md,yml}"
+      run: yarn prettier {staged_files} --write
+      stage_fixed: true
+    slim_lint:
+      tags: slim style
+      glob: "**/*.slim"
+      run: bundle exec slim-lint {staged_files}
+    rubocop:
+      tags: ruby style
+      glob: "**/*.rb"
+      run: bundle exec rubocop --autocorrect {staged_files}
+      stage_fixed: true

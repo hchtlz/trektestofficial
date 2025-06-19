@@ -1,0 +1,41 @@
+= render Trek::HeadingComponent.new( \
+  title: @object,
+  intro: t(".intro"),
+) do |c|
+  ruby:
+    c.with_button(
+      href: [:edit, :admin, @object],
+      text: t("admin.actions.edit"),
+    )
+
+    if @object == current_user
+      c.with_button(
+        href: %i[admin logout],
+        text: t("admin.actions.logout"),
+        data: { turbo_method: :delete },
+      ) do |b|
+        b.with_icon("trek/logout")
+      end
+    end
+
+= render Trek::PropertiesComponent.new(model:) do |p|
+  - if @object.name?
+    = p.with_item :name
+      = @object.name
+
+  = p.with_item :role
+    = t("user.roles.#{@object.role}")
+
+  = p.with_item :email
+    = mail_to @object.email
+
+  = p.with_item :created_at
+    = l(@object.created_at, default: "")
+
+  - if policy_permitted_attribute?(:locale) && @object.locale?
+    = p.with_item :locale
+      = t("user.locale.#{@object.locale}")
+
+  - if policy_permitted_attribute?(:theme) && @object.theme?
+    = p.with_item :theme
+        = t("user.theme.#{@object.theme}")

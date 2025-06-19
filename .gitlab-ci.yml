@@ -1,0 +1,196 @@
+# GitLab CI configuration file.
+# Documentation: https://docs.gitlab.com/ce/ci/yaml/README.html
+
+# Variables
+variables:
+  POSTGRES_DB: "project_test"
+  POSTGRES_HOST_AUTH_METHOD: "trust"
+  DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  RAILS_ENV: "test"
+  REDIS_URL: "redis://redis@redis"
+  BUNDLE_PATH: "vendor/bundle"
+  YARN_CACHE_FOLDER: ".yarn/cache"
+
+# Stages
+stages:
+  - build
+  - test
+  - lint
+  - security
+  - deploy
+
+# Defaults
+default:
+  image: registry.git.etaminstud.io/devops/ci-ruby/node-22:3.4.3
+
+  services:
+    - postgres:16
+
+  before_script:
+    - export BUNDLE_JOBS=$(nproc)
+    - bin/setup
+    - yarn
+
+  # Cache gems in between builds
+  cache: &cache
+    key: $CI_COMMIT_REF_NAME
+    paths:
+      - .yarn/cache
+      - node_modules/
+      - vendor/bundle
+    policy: pull
+
+#
+# Build
+#
+prepare:
+  stage: build
+  script:
+    - echo "Setup done" # bin/setup is called in the before_script
+  cache:
+    <<: *cache
+    policy: pull-push
+
+#
+# Tests
+#
+.tests_template: &tests_definition
+  stage: test
+  services:
+    - postgres:16
+    - redis:latest
+
+migrations_and_seeds:
+  <<: *tests_definition
+  script:
+    - bundle exec rake db:migrate:reset
+    - bundle exec rake db:seed
+
+tests:
+  <<: *tests_definition
+  variables:
+    COVERAGE: "true"
+    DISABLE_SPRING: 1
+  before_script:
+    - yarn build
+    - bundle exec rails assets:precompile
+  script:
+    - bundle exec rspec --format progress --format RspecJunitFormatter --out rspec.xml
+  coverage: /\(\d+.\d+\%\) covered/
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_SHA}"
+    expire_in: 5 days
+    when: always
+    paths:
+      - coverage
+      - rspec.xml
+    reports:
+      junit: rspec.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/coverage.xml
+
+# tests:system:
+#   <<: *tests_definition
+#   script:
+#     - bundle exec rake test:system
+#   retry:
+#     max: 2
+#     when: script_failure
+#   artifacts:
+#     name: "${CI_JOB_NAME}_${CI_COMMIT_SHA}"
+#     expire_in: 1 day
+#     when: always
+#     paths:
+#       - tmp/screenshots
+
+#
+# Lint
+#
+.lint_template: &lint_definition
+  stage: lint
+  services: []
+  except:
+    - main
+    - production
+
+rubocop:
+  <<: *lint_definition
+  script:
+    - bundle exec rubocop
+
+slim-lint:
+  <<: *lint_definition
+  script:
+    - bundle exec slim-lint "app/**/*.slim"
+
+prettier:
+  <<: *lint_definition
+  script:
+    - yarn prettier --check "{app,config,lib,spec}/**/*.{css,js,json,md,yml}"
+
+stylelint:
+  <<: *lint_definition
+  script:
+    - yarn stylelint "app/**/*.css"
+
+eslint:
+  <<: *lint_definition
+  script:
+    - yarn eslint "app/**/*.js"
+
+# i18n:
+#   <<: *lint_definition
+#   script:
+#     - bundle exec i18n-tasks health
+
+#
+# Security
+#
+.security_template: &security_definition
+  stage: security
+  before_script: []
+  services: []
+
+brakeman:
+  <<: *security_definition
+  script:
+    - bundle exec brakeman --no-exit-on-error
+
+bundler-audit:
+  <<: *security_definition
+  script:
+    - bundle exec bundle-audit check --update
+
+ruby-audit:
+  <<: *security_definition
+  script:
+    - bundle exec ruby-audit check
+
+#
+# Deploy
+#
+.deploy_template: &deploy_definition
+  stage: deploy
+  before_script: []
+  cache: {}
+  services: []
+# qa:
+#   <<: *deploy_definition
+#   only:
+#     - main
+#   environment:
+#     name: qa
+#     url: https://qa.temoanadiving.com
+#   script:
+#     - curl $HATCHBOX_WEBHOOK_QA -X POST
+
+# production:
+#   <<: *deploy_definition
+#   only:
+#     - production
+#   environment:
+#     name: preprod
+#     url: https://temoanadiving.com
+#   script:
+#     - curl $HATCHBOX_WEBHOOK_PROD -X POST

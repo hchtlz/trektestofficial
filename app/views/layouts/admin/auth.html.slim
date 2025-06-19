@@ -1,0 +1,31 @@
+doctype html
+html(lang=I18n.locale class=class_for_theme)
+  head
+    meta(name="charset" content="utf-8")
+    meta(name="viewport" content="width=device-width,initial-scale=1")
+    title Admin #{t("application_name")}
+    / = display_meta_tags site: "Admin #{t('application_name')}",
+    /                     separator: "–",
+    /                     reverse: true
+    link(rel="icon" href="/favicon.svg" type="image/svg+xml")
+    link(rel="apple-touch-icon" href="/apple-touch-icon.png")
+    link(rel="manifest" href="/site.webmanifest")
+    = csrf_meta_tags
+    = csp_meta_tag
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+    / slim-lint:disable LineLength
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet")
+    / slim-lint:enable LineLength
+    = stylesheet_link_tag "admin",
+                          media: "all",
+                          'data-turbo-track': "reload"
+    = javascript_include_tag "admin",
+                             defer: true,
+                             'data-turbo-track': "reload"
+  body
+    = render Trek::ToasterComponent.new
+      = render Trek::Toaster::ToastComponent.new(text: alert, color: :tomato)
+      = render Trek::Toaster::ToastComponent.new(text: notice)
+    = yield
+    = render Trek::Icon::SpriteComponent.new

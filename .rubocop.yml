@@ -1,0 +1,40 @@
+# Omakase Ruby styling for Rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+plugins:
+  - rubocop-rspec
+
+Bundler:
+  Enabled: true
+Gemspec:
+  Enabled: true
+Performance:
+  Enabled: true
+Rails:
+  Enabled: true
+Security:
+  Enabled: true
+
+AllCops:
+  NewCops: disable
+  TargetRubyVersion: 3.4
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: true
+  EnforcedStyle: no_space
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  Enabled: true
+  EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 120
+
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Rails/BulkChangeTable:
+  Enabled: false

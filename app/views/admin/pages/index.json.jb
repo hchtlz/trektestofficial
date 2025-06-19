@@ -1,0 +1,3 @@
+render collection: @objects,
+  partial: "admin/#{model_collection}/#{model_element}",
+  as: :object

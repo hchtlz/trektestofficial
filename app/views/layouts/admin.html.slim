@@ -1,0 +1,71 @@
+doctype html
+html(lang=I18n.locale class=class_for_theme)
+  head
+    meta(name="charset" content="utf-8")
+    meta(name="viewport" content="width=device-width,initial-scale=1")
+    title Admin #{t("application_name")}
+    / = display_meta_tags site: "Admin #{t('application_name')}",
+    /                     separator: "–",
+    /                     reverse: true
+    link(rel="icon" href="/favicon.svg" type="image/svg+xml")
+    link(rel="apple-touch-icon" href="/apple-touch-icon.png")
+    link(rel="manifest" href="/site.webmanifest")
+    = csrf_meta_tags
+    = csp_meta_tag
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+    = admin_webfonts_link_tag
+    = stylesheet_link_tag "admin",
+                          media: "all",
+                          "data-turbo-track": "reload"
+    = javascript_include_tag "admin",
+                             defer: true,
+                             "data-turbo-track": "reload"
+  body
+    = render Trek::LayoutComponent.new do |c|
+      ruby:
+        c.with_header(
+          current_object: @object,
+          current_user:,
+        )
+        c.with_menu("") do |m|
+          m.with_section(title: t("admin.dashboard")) do |s|
+            s.with_item(
+              text: t("admin.dashboards.index.title"),
+              href: %i[admin root],
+            )
+          end
+          m.with_section(title: t("admin.contents")) do |s|
+            Admin::Dashboard.menu_models.each do |model|
+              s.with_item(
+                text: model.model_name.human(count: 2),
+                href: [:admin, model],
+                allowed_to: allowed_to?(:index?, model),
+              )
+            end
+          end
+          m.with_section(title: t("admin.navigation")) do |s|
+            MenuNode.roots.each do |menu|
+              s.with_item(
+                text: menu.title,
+                href: [:edit, :admin, menu],
+                allowed_to: allowed_to?(:edit?, menu),
+              )
+            end
+          end
+          m.with_section(title: t("admin.settings")) do |s|
+            s.with_item(
+              text: User.model_name.human(count: 2),
+              href: %i[admin users],
+              allowed_to: allowed_to?(:index?, User),
+            )
+          end
+        end
+      = render Trek::ToasterComponent.new
+        = render Trek::Toaster::ToastComponent.new( \
+          text: alert, color: :tomato) do |t|
+            - t.with_icon("trek/danger")
+        = render Trek::Toaster::ToastComponent.new(text: notice)
+      = yield
+    = render Trek::Icon::SpriteComponent.new
+    = render Trek::DialogComponent.new

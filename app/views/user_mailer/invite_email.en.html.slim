@@ -1,0 +1,29 @@
+h1 Hello #{@user},
+p You have been invited to #{admin_full_brand}.
+
+table.body-action(
+  align="center"
+  width="100%"
+  cellpadding="0"
+  cellspacing="0"
+  role="presentation"
+)
+  tr
+    td(align="center")
+      table(
+        width="100%"
+        border="0"
+        cellspacing="0"
+        cellpadding="0"
+        role="presentation"
+      )
+        tr
+          td(align="center")
+            = link_to "Choose your password",
+                      @url,
+                      class: "f-fallback button",
+                      target: "_blank",
+                      rel: "noopener noreferrer"
+
+p Have a great day!
+p The #{t("application_name")} team

@@ -1,0 +1,117 @@
+= form_for [:admin, @object] do |f|
+  = render Trek::Form::ErrorsComponent.new(object: @object)
+
+  = render Trek::TabsComponent.new do |c|
+    - c.with_item(id: :content, label: t("admin.content"))
+      - if @object.key != "root" && policy_permitted_attribute?(:title)
+        = f.group :title
+          = f.text_field :title
+
+      - if @object.versioned?
+        = render Trek::Form::FieldsetComponent.new( \
+            title: t("admin.versions.current_name",
+                     name: @object.current_version.name,
+                   ),
+            classnames: "version",
+          ) do
+          = f.fields_for :versions, @object.current_version do |vf|
+            - if policy_permitted_attribute?(:image)
+              = vf.group :image
+                = vf.image_field :image
+
+            - if @object.sectioned?
+              - vf.object.sections_instances.each do |section|
+                = render Trek::Form::FieldsetComponent.new( \
+                    title: "#{section.position}. #{section.model_name.human}",
+                    classnames: "section",
+                  ) do
+                  = turbo_frame_tag(dom_id(section))
+                    = render section.to_admin_component
+            - elsif policy_permitted_attribute?(:content)
+              = vf.group :content
+                = vf.content_editor :content
+      - else
+        - if policy_permitted_attribute?(:image)
+          = f.group :image
+            = f.image_field :image
+
+        - if @object.sectioned?
+          - vf.object.sections_instances.each do |section|
+            = render Trek::Form::FieldsetComponent.new( \
+                title: "#{section.position}. #{section.model_name.human}",
+                classnames: "section",
+              ) do
+              = turbo_frame_tag(dom_id(section))
+                = render section.to_admin_component
+        / TODO: improve condition with a dedicated `content_enabled` flag?
+        - elsif policy_permitted_attribute?(:content)
+          = f.group :content
+            = f.content_editor :content
+
+      / TODO: improve this with pattern matching
+      / if policy_permitted_attribute?(:fragments_attributes)
+      = f.fields_for :fragments do |ff|
+        = ff.group ff.object.title
+          = ff.content_editor :content, blocks: false, floating: false
+
+    - if current_user.admin? && !@object.root? && !@object.leaf?
+      - children_list_id = dom_id(@object, :children_thumbnails_list)
+      - c.with_item(id: :thumbnails, label: t("admin.thumbnails"))
+        = f.group :bottom_content
+          = f.switch_box :children_thumbnails,
+                         conditional_element: "##{children_list_id}"
+
+        div(id=children_list_id hidden=!@object.children_thumbnails?)
+          - @object.children.each do |child|
+            = render Trek::List::ItemComponent.new( \
+              item: child,
+              link: false,
+            ).with_content(" ")
+
+    - if policy_permitted_attribute?(:description) \
+         || policy_permitted_attribute?(:slug)
+      - c.with_item(id: :seo, label: t("admin.seo"))
+        - if policy_permitted_attribute?(:description)
+          = f.group :description
+            = f.text_area :description
+
+        - if policy_permitted_attribute?(:slug)
+          = f.group :slug
+            = f.text_field :slug
+
+        = f.group :key
+          = f.text_field :key, disabled: true
+
+    - if @object.versioned?
+      - c.with_item( \
+          id: :versions,
+          href: [:admin, @object, :versions],
+          label: t("admin.versions.title"),
+        )
+
+  = render Trek::Form::ActionsComponent.new do |c|
+    ruby:
+      c.with_button(
+        href: [:admin, model_collection],
+        text: t("admin.actions.cancel"),
+      )
+
+      c.with_button(
+        type: "submit",
+        text: t("admin.actions.validate"),
+        color: :grass,
+      )
+      if @object.persisted? && allowed_to?(:destroy, @object)
+        c.with_button(
+          text: t("admin.actions.delete"),
+          to: [:admin, @object],
+          method: :delete,
+          data: {
+            turbo_confirm: t(
+              "admin.#{model_collection}.destroy.confirm"
+            )
+          },
+          color: :tomato,
+          position: :right,
+        )
+      end

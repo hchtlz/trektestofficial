@@ -1,0 +1,17 @@
+= render Trek::GateComponent.new
+  = form_for [:admin, @user_password_reset] do |f|
+    = f.group :email
+      = f.email_field :email
+
+    = render Trek::Form::ActionsComponent.new do |c|
+      ruby:
+        c.with_button(
+          type: "submit",
+          text: t("admin.actions.validate"),
+          color: :grass,
+        )
+
+        c.with_link(
+          href: %i[admin login],
+          text: t(".remembered_password"),
+        )

@@ -1,0 +1,60 @@
+= form_for [:admin, @object] do |f|
+  = render Trek::Form::ErrorsComponent.new(object: @object)
+
+  - if policy_permitted_attribute?(:name)
+    = f.group :name
+      = f.text_field :name
+
+  = f.group :email
+    = f.email_field :email
+
+  - if policy_permitted_attribute?(:role)
+    = f.group :role
+      = f.select :role, options_for_select( \
+          authorized_scope( \
+            User.human_roles,
+            with: Trek::UserPolicy,
+            type: :data,
+            as: :human_roles_for_create,
+          ),
+          @object.role,
+        )
+
+  - if policy_permitted_attribute?(:locale)
+    = f.group :locale
+      = f.select :locale,
+                options_for_select(User.human_locales, @object.locale),
+                include_blank: true
+
+  - if policy_permitted_attribute?(:theme)
+    = f.group :theme
+      = f.select :theme, options_for_select(User.human_themes, @object.theme)
+
+  - if policy_permitted_attribute?(:send_invite)
+    = f.group :send_invite
+      = f.switch_box :send_invite
+
+= render Trek::Form::ActionsComponent.new do |c|
+  ruby:
+    c.with_button(
+      href: [:admin, @object || model_collection],
+      text: t("admin.actions.cancel"),
+    )
+
+    c.with_button(
+      type: "submit",
+      form: dom_id(@object, @object.new_record? ? nil : :edit),
+      text: t("admin.actions.validate"),
+      color: :grass,
+    )
+
+    if @object.persisted? && allowed_to?(:destroy?, @object)
+      c.with_button(
+        text: t("admin.actions.delete"),
+        to: [:admin, @object],
+        method: "delete",
+        data: { turbo_confirm: t("admin.#{model_collection}.destroy.confirm") },
+        color: :tomato,
+        position: :right,
+      )
+    end

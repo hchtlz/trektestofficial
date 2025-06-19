@@ -1,0 +1,29 @@
+= render Trek::HeadingComponent.new( \
+  title: t(".title"),
+  intro: t(".intro"),
+)
+
+= render Trek::Dashboard::SectionComponent.new( \
+    title: t("admin.actions.write"),
+  ) do |s|
+  ruby:
+    Admin::Dashboard.menu_models.each do |model|
+      s.with_tile(
+        text: i18n_resource_label(:new, model).sub(" ", "\n"),
+        icon: "trek/add",
+        color: cycle(Admin::Dashboard.tile_colors),
+        href: [:new, :admin, model.model_name.element.to_sym],
+        allowed_to: allowed_to?(:new?, model),
+      )
+    end
+
+= render Trek::Dashboard::SectionComponent.new( \
+    title: t("admin.actions.manage"),
+  ) do |s|
+  ruby:
+    s.with_tile(
+      text: i18n_resource_label(:search, User).sub(" ", "\n"),
+      icon: "trek/search",
+      color: "purple",
+      href: "#", # %i[admin users],
+    )

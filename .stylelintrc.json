@@ -1,0 +1,13 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "ignoreFiles": ["app/assets/builds/**/*.css", "node_modules/**/*.css", "vendor/**/*.css"],
+  "plugins": ["stylelint-order"],
+  "rules": {
+    "custom-property-pattern": "^[a-z0-9A-]+$",
+    "no-descending-specificity": null,
+    "order/properties-alphabetical-order": true,
+    "selector-class-pattern": "^[a-z0-9-]+$",
+    "selector-pseudo-class-no-unknown": null,
+    "selector-id-pattern": "^[a-z0-9-]+$"
+  }
+}

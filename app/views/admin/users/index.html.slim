@@ -1,0 +1,21 @@
+= render Trek::HeadingComponent.new( \
+  title: model_name.human(count: 2),
+  intro: t(".intro"),
+) do |c|
+  ruby:
+    if allowed_to?(:new?, model)
+      c.with_button(
+        href: [:new, :admin, model_element],
+        text: i18n_resource_label(:new, model),
+      ) do |b|
+        b.with_icon("trek/add")
+      end
+    end
+
+= render Trek::ListComponent.new(action: :show) do |c|
+  ruby:
+    @objects.each do |object|
+      c.with_item(object:) do
+        t("user.roles.#{object.role}")
+      end
+    end

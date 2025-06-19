@@ -1,0 +1,9 @@
+{
+  id: object.id,
+  title: object.title,
+  slug: object.slug,
+  description: object.description,
+  created_at: object.created_at,
+  updated_at: object.updated_at,
+  url: url_for([:admin, object, { format: :json }])
+}

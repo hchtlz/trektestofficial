@@ -1,0 +1,19 @@
+= form_for [:admin, @object] do |f|
+  = render Trek::Form::ErrorsComponent.new(object: @object)
+
+  .field
+    = f.label :title
+    = f.text_field :title
+
+  = render Trek::Form::ActionsComponent.new do |c|
+    ruby:
+      c.with_button(
+        href: [:admin, model_collection],
+        text: t("admin.actions.cancel"),
+      )
+
+      c.with_button(
+        type: "submit",
+        text: t("admin.actions.validate"),
+        color: :grass,
+      )

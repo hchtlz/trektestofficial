@@ -1,0 +1,5 @@
+{
+  id: object.id,
+  title: object.title,
+  url: url_for([:admin, object, { format: :json }])
+}

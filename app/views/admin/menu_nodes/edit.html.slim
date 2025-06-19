@@ -1,0 +1,32 @@
+= render Trek::HeadingComponent.new( \
+  title: @object.to_s,
+  intro: t(".intro"),
+) do |c|
+  ruby:
+    if @mode == :reorder
+      c.with_button(
+        href: url_for(mode: nil),
+        text: t("admin.actions.cancel"),
+      )
+
+      c.with_button(
+        href: url_for(mode: nil),
+        text: t("admin.actions.validate"),
+        color: :grass,
+      )
+    elsif Trek::Feature.reorder? && allowed_to?(:reorder?, model)
+      c.with_button(
+        href: url_for(mode: :reorder),
+        text: t("admin.actions.reorder_resource",
+          resource_plural: model_name.human(count: 2).downcase,
+        ),
+      ) do |b|
+        b.icon("admin/reorder")
+      end
+    end
+
+= render Trek::List::TreeComponent.new( \
+  tree: @object.children.hash_tree(limit_depth: 4),
+  links: false,
+  reorderable: (@mode == :reorder),
+)
