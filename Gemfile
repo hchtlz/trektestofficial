@@ -50,6 +50,7 @@ group :development do
   gem "web-console"
 end
 
+gem "actioncable", group: :development
 gem "action_policy"
 gem "aws-sdk-s3", "~> 1.117"
 gem "blurhash", "~> 0.1.7"
@@ -61,6 +62,8 @@ gem "fastimage", "~> 2.2"
 gem "i18n-tasks", "~> 1.0"
 gem "image_processing", "~> 1.8"
 gem "kaminari"
+gem "listen", group: :development
+gem "lookbook", "~> 2.1"
 gem "mobility", "~> 1.2.9"
 gem "postmark-rails"
 gem "rails-healthcheck"

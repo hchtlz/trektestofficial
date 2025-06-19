@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   # mount ImageUploader.derivation_endpoint => "derivations/image"
+  mount Lookbook::Engine, at: "/lookbook" if Rails.env.development?
+  mount ImageUploader.derivation_endpoint => "derivations/image"
   post "upload", to: "uploads#image", namespace: :admin
   namespace :admin do
     resources :users
